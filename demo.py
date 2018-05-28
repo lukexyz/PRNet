@@ -15,23 +15,26 @@ from utils.rotate_vertices import frontalize
 from utils.render_app import get_visibility, get_uv_mask, get_depth_image
 from utils.write import write_obj, write_obj_with_texture
 
+
 def main(args):
     if args.isShow or args.isTexture:
         import cv2
         from utils.cv_plot import plot_kpt, plot_vertices, plot_pose_box
 
     # ---- init PRN
-    os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu # GPU number, -1 for CPU
-    prn = PRN(is_dlib = args.isDlib)
+    os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu   # GPU number, -1 for CPU
+    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'   # remove tf-cpu warning
+    prn = PRN(is_dlib=args.isDlib)
 
     # ------------- load data
     image_folder = args.inputDir
     save_folder = args.outputDir
+    print('save folder:', save_folder)
     if not os.path.exists(save_folder):
         os.mkdir(save_folder)
 
     types = ('*.jpg', '*.png')
-    image_path_list= []
+    image_path_list = []
     for files in types:
         image_path_list.extend(glob(os.path.join(image_folder, files)))
     total_num = len(image_path_list)
@@ -47,10 +50,10 @@ def main(args):
         # the core: regress position map
         if args.isDlib:
             max_size = max(image.shape[0], image.shape[1])
-            if max_size> 1000:
+            if max_size > 1000:
                 image = rescale(image, 1000./max_size)
                 image = (image*255).astype(np.uint8)
-            pos = prn.process(image) # use dlib to detect face
+            pos = prn.process(image)  # use dlib to detect face
         else:
             if image.shape[1] == image.shape[2]:
                 image = resize(image, (256,256))
@@ -123,9 +126,9 @@ def main(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Joint 3D Face Reconstruction and Dense Alignment with Position Map Regression Network')
 
-    parser.add_argument('-i', '--inputDir', default='TestImages/', type=str,
+    parser.add_argument('-i', '--inputDir', default='TestImages/LukePics', type=str,
                         help='path to the input directory, where input images are stored.')
-    parser.add_argument('-o', '--outputDir', default='TestImages/results', type=str,
+    parser.add_argument('-o', '--outputDir', default='TestImages/LukePics/results', type=str,
                         help='path to the output directory, where results(obj,txt files) will be stored.')
     parser.add_argument('--gpu', default='0', type=str,
                         help='set gpu id, -1 for CPU')
@@ -141,13 +144,13 @@ if __name__ == '__main__':
                         help='whether to output estimated pose(.txt)')
     parser.add_argument('--isShow', default=False, type=ast.literal_eval,
                         help='whether to show the results with opencv(need opencv)')
-    parser.add_argument('--isImage', default=False, type=ast.literal_eval,
+    parser.add_argument('--isImage', default=True, type=ast.literal_eval,
                         help='whether to save input image')
     # update in 2017/4/10
-    parser.add_argument('--isFront', default=False, type=ast.literal_eval,
+    parser.add_argument('--isFront', default=True, type=ast.literal_eval,
                         help='whether to frontalize vertices(mesh)')
     # update in 2017/4/25
-    parser.add_argument('--isDepth', default=False, type=ast.literal_eval,
+    parser.add_argument('--isDepth', default=True, type=ast.literal_eval,
                         help='whether to output depth image')
     # update in 2017/4/27
     parser.add_argument('--isTexture', default=False, type=ast.literal_eval,

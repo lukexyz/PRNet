@@ -20,13 +20,13 @@ def texture_editing(prn, args):
     image = imread(args.image_path)
     [h, w, _] = image.shape
 
-    #-- 1. 3d reconstruction -> get texture. 
+    # -- 1. 3d reconstruction -> get texture.
     pos = prn.process(image) 
     vertices = prn.get_vertices(pos)
     image = image/255.
     texture = cv2.remap(image, pos[:,:,:2].astype(np.float32), None, interpolation=cv2.INTER_NEAREST, borderMode=cv2.BORDER_CONSTANT,borderValue=(0))
     
-    #-- 2. Texture Editing
+    # -- 2. Texture Editing
     Mode = args.mode
     # change part of texture(for data augumentation/selfie editing. Here modify eyes for example)
     if Mode == 0: 
@@ -42,7 +42,7 @@ def texture_editing(prn, args):
         ref_texture = cv2.remap(ref_image, ref_pos[:,:,:2].astype(np.float32), None, interpolation=cv2.INTER_NEAREST, borderMode=cv2.BORDER_CONSTANT,borderValue=(0))
 
         # modify texture
-        new_texture = texture*(1 - eye_mask[:,:,np.newaxis]) + ref_texture*eye_mask[:,:,np.newaxis]
+        new_texture = texture*(1 - eye_mask[:,:,np.newaxis]) + ref_texture*eye_mask[:, :, np.newaxis]
     
     # change whole face(face swap)
     elif Mode == 1: 
@@ -83,9 +83,9 @@ def texture_editing(prn, args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Texture Editing by PRN')
 
-    parser.add_argument('-i', '--image_path', default='TestImages/AFLW2000/image00081.jpg', type=str,
+    parser.add_argument('-i', '--image_path', default='TestImages/AFLW2000/image00050.jpg', type=str,
                         help='path to input image')
-    parser.add_argument('-r', '--ref_path', default='TestImages/trump.jpg', type=str, 
+    parser.add_argument('-r', '--ref_path', default='TestImages/4.jpg', type=str,
                         help='path to reference image(texture ref)')
     parser.add_argument('-o', '--output_path', default='TestImages/output.jpg', type=str, 
                         help='path to save output')

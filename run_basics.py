@@ -9,13 +9,13 @@ from api import PRN
 from utils.write import write_obj
 
 # ---- init PRN
-os.environ['CUDA_VISIBLE_DEVICES'] = '0' # GPU number, -1 for CPU
-prn = PRN(is_dlib = False) 
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1' # GPU number, -1 for CPU
+prn = PRN(is_dlib=True)
 
 
 # ------------- load data
-image_folder = 'TestImages/AFLW2000/'
-save_folder = 'TestImages/AFLW2000_results'
+image_folder = 'TestImages/LukePics/'
+save_folder = 'TestImages/LukePics_results'
 if not os.path.exists(save_folder):
     os.mkdir(save_folder)
 
